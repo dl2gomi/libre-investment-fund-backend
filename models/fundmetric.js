@@ -16,6 +16,12 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: 0,
         field: 'shares_supply'
       },
+      sharePrice: {
+        type: DataTypes.DECIMAL(18, 6),
+        allowNull: false,
+        defaultValue: 1,
+        field: 'share_price'
+      },
       lastUpdateTime: {
         type: DataTypes.DATE,
         allowNull: false,

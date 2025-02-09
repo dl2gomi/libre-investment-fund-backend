@@ -18,6 +18,11 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
       },
+      tx_id: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        unique: true
+      },
       transaction_type: {
         type: Sequelize.ENUM('investment', 'redemption'),
         allowNull: false

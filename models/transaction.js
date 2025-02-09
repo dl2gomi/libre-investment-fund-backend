@@ -9,6 +9,12 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         field: 'investor_id'
       },
+      txId: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+        field: 'tx_id'
+      },
       transactionType: {
         type: DataTypes.ENUM('investment', 'redemption'),
         allowNull: false,

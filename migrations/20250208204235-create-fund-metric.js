@@ -18,6 +18,11 @@ module.exports = {
         allowNull: false,
         defaultValue: 0
       },
+      share_price: {
+        type: Sequelize.DECIMAL(18, 6),
+        allowNull: false,
+        defaultValue: 1
+      },
       last_update_time: {
         type: Sequelize.DATE,
         allowNull: false
