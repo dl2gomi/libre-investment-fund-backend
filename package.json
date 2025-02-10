@@ -1,8 +1,11 @@
 {
   "name": "investment-fund-backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
+    "start": "node server.js && node chain.js",
+    "start:api": "node server.js",
+    "start:chain": "node chain.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Denis Lee",

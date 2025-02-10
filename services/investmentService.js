@@ -1,19 +1,28 @@
-const { Investor, Transaction } = require('../models');
+const { Investor, Transaction, LastBlock } = require('../models');
 const { ethers } = require('ethers');
-const logger = require('../utils/logger');
 
-exports.handleInvestment = async (investorAddress, usdAmount, sharesIssued, sharePrice, txId) => {
-  const formattedShares = ethers.formatUnits(sharesIssued, 6);
-  const formattedUsdAmount = ethers.formatUnits(usdAmount, 6);
+exports.handleInvestment = async (investorAddress, usdAmount, sharesIssued, sharePrice, event) => {
+  const block = await event.getBlock();
+  const txId = event.transactionHash;
+  const blockNumber = block.number;
+
+  const lastBlock = await LastBlock.findOne({ where: { eventName: 'Investment' } });
+
+  // Return null if this transaction is already handled
+  if (lastBlock && lastBlock.blockNumber >= blockNumber) {
+    return null;
+  }
 
   // Find txId transaction in the DB
   const existingTransaction = await Transaction.findOne({ where: { txId } });
 
   // Return null if this transaction is already handled
   if (existingTransaction) {
-    logger.warn(`Transaction already exists: ${txId}`);
     return null;
   }
+
+  const formattedShares = ethers.formatUnits(sharesIssued, 6);
+  const formattedUsdAmount = ethers.formatUnits(usdAmount, 6);
 
   // Find or create the investor
   const [investor, created] = await Investor.findOrCreate({
@@ -35,6 +44,9 @@ exports.handleInvestment = async (investorAddress, usdAmount, sharesIssued, shar
     usdAmount: formattedUsdAmount,
     shares: formattedShares
   });
+
+  // Record the last block number
+  await LastBlock.upsert({ eventName: 'Investment', blockNumber });
 
   return { investor: investorAddress, sharesIssued: formattedShares, usdAmount: formattedUsdAmount };
 };
