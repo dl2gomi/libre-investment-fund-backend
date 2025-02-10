@@ -2,9 +2,9 @@ const { fundContract: contract, httpProvider, wsProvider } = require('./blockcha
 const { LastBlock } = require('./models');
 const logger = require('./utils/logger');
 const { listenContractEvents } = require('./blockchain/eventListener');
-const { handleInvestment } = require('./services/investmentService');
-const { handleRedemption } = require('./services/redemptionService');
-const { handleMetricsUpdated } = require('./services/metricsService');
+const { handleInvestment } = require('./blockchain/services/investmentService');
+const { handleRedemption } = require('./blockchain/services/redemptionService');
+const { handleMetricsUpdated } = require('./blockchain/services/metricsService');
 
 async function fetchPastEvents() {
   try {

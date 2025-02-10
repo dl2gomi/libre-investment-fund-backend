@@ -1,5 +1,5 @@
 const { ethers } = require('ethers');
-const { Investor, Transaction, LastBlock } = require('../models');
+const { Investor, Transaction, LastBlock } = require('../../models');
 
 exports.handleRedemption = async (investorAddress, shares, usdAmount, sharePrice, event) => {
   const block = await event.getBlock();

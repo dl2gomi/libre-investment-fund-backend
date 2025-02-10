@@ -1,7 +1,7 @@
 require('dotenv').config();
-const { handleInvestment } = require('../services/investmentService');
-const { handleRedemption } = require('../services/redemptionService');
-const { handleMetricsUpdated } = require('../services/metricsService');
+const { handleInvestment } = require('./services/investmentService');
+const { handleRedemption } = require('./services/redemptionService');
+const { handleMetricsUpdated } = require('./services/metricsService');
 const { fundContract } = require('./fundContract');
 const logger = require('../utils/logger');
 

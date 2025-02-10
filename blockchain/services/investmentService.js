@@ -1,4 +1,4 @@
-const { Investor, Transaction, LastBlock } = require('../models');
+const { Investor, Transaction, LastBlock } = require('../../models');
 const { ethers } = require('ethers');
 
 exports.handleInvestment = async (investorAddress, usdAmount, sharesIssued, sharePrice, event) => {

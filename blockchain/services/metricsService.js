@@ -1,6 +1,6 @@
 const { ethers } = require('ethers');
-const { FundMetric, LastBlock } = require('../models');
-const redisClient = require('../utils/redisClient');
+const { FundMetric, LastBlock } = require('../../models');
+const redisClient = require('../../utils/redisClient');
 
 exports.handleMetricsUpdated = async (totalAssetValue, sharesSupply, sharePrice, event) => {
   const block = await event.getBlock();
