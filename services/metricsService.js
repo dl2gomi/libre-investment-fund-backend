@@ -1,5 +1,6 @@
 const { ethers } = require('ethers');
 const { FundMetric, LastBlock } = require('../models');
+const redisClient = require('../utils/redisClient');
 
 exports.handleMetricsUpdated = async (totalAssetValue, sharesSupply, sharePrice, event) => {
   const block = await event.getBlock();
@@ -24,6 +25,8 @@ exports.handleMetricsUpdated = async (totalAssetValue, sharesSupply, sharePrice,
     sharePrice: formattedSharePrice,
     lastUpdateTime: blocktime
   });
+
+  await redisClient.del('latestFundMetrics');
 
   // Record the last block number
   await LastBlock.upsert({ eventName: 'MetricsUpdated', blockNumber });

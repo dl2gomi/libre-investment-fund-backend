@@ -2,6 +2,7 @@ const { Op } = require('sequelize');
 const { FundMetric } = require('../../models');
 const { successResponse, errorResponse } = require('../../utils/response');
 const logger = require('../../utils/logger');
+const redisClient = require('../../utils/redisClient');
 
 // Function for parsing query parameters (pagination and time range)
 const parseQueryParams = (query) => {
@@ -46,6 +47,13 @@ const getTimeRangeFilter = (timeRange) => {
 // Get the latest fund metrics (most recent record)
 exports.getLatestMetrics = async (req, res) => {
   try {
+    // Check if cached data exists in Redis
+    const cachedMetrics = await redisClient.get('latestFundMetrics');
+    if (cachedMetrics) {
+      return successResponse(res, 'Fund metrics retrieved from cache', JSON.parse(cachedMetrics));
+    }
+
+    // If no cached data, fetch from the database
     const latestMetrics = await FundMetric.findOne({
       order: [['lastUpdateTime', 'DESC']]
     });
@@ -53,6 +61,9 @@ exports.getLatestMetrics = async (req, res) => {
     if (!latestMetrics) {
       return errorResponse(res, 'No fund metrics available', 404);
     }
+
+    // Store metrics in Redis cache with TTL of 10 minutes
+    await redisClient.setEx('latestFundMetrics', 600, JSON.stringify(latestMetrics));
 
     return successResponse(res, 'Latest fund metrics retrieved successfully', latestMetrics);
   } catch (error) {
