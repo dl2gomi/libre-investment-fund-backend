@@ -50,15 +50,15 @@ async function fetchPastEvents() {
 }
 
 async function listenProviderEvents() {
-  wsProvider.websocket.on('error', (error) => {
+  wsProvider.websocket.onerror = (error) => {
     logger.error('Provider error, attempting to reconnect...', error);
     startListener();
-  });
+  };
 
-  wsProvider.websocket.on('close', (event) => {
+  wsProvider.websocket.onclose = (event) => {
     logger.error(`Disconnected with event ${event}. Attempting to reconnect...`);
     startListener();
-  });
+  };
 }
 
 // Start the event listeners
