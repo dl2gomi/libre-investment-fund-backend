@@ -3,21 +3,22 @@ const logger = require('../utils/logger');
 require('dotenv').config();
 
 let fundContract;
+let httpProvider;
+let wsProvider;
+let wallet;
 
 try {
-  // Load contract ABI
-  const fundTokenABI = require('../abi/FundToken.abi.json').abi;
-
-  // Ethereum Provider (use Infura, Alchemy, or a local node)
-  const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
+  // Ethereum Provider
+  httpProvider = new ethers.JsonRpcProvider(process.env.RPC_URL);
+  wsProvider = new ethers.WebSocketProvider(process.env.WS_RPC_URL);
 
   // Wallet (for signing transactions)
-  const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+  wallet = new ethers.Wallet(process.env.PRIVATE_KEY, httpProvider);
 
   // Contract Instance
-  fundContract = new ethers.Contract(process.env.CONTRACT_ADDRESS, fundTokenABI, wallet);
+  fundContract = new ethers.Contract(process.env.CONTRACT_ADDRESS, require('../abi/FundToken.abi.json'), wallet);
 } catch (error) {
   logger.error('Error loading contract: ', error);
 }
 
-module.exports = fundContract;
+module.exports = { fundContract, httpProvider, wsProvider };

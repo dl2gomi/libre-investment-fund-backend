@@ -2,10 +2,10 @@ require('dotenv').config();
 const { handleInvestment } = require('../services/investmentService');
 const { handleRedemption } = require('../services/redemptionService');
 const { handleMetricsUpdated } = require('../services/metricsService');
-const fundContract = require('./fundContract');
+const { fundContract } = require('./fundContract');
 const logger = require('../utils/logger');
 
-async function listenEvents() {
+async function listenContractEvents() {
   // Event: Investment
   fundContract.on('Investment', async (investor, usdAmount, sharesIssued, sharePrice, event) => {
     try {
@@ -22,7 +22,7 @@ async function listenEvents() {
       const result = await handleRedemption(investor, shares, usdAmount, sharePrice, event);
       if (result) logger.info(`Processed Redemption Event: `, result);
     } catch (error) {
-      logger.error(`Error processing investment event: `, error);
+      logger.error(`Error processing redemption event: `, error);
     }
   });
 
@@ -32,9 +32,9 @@ async function listenEvents() {
       const result = await handleMetricsUpdated(totalAssetValue, sharesSupply, sharePrice, event);
       if (result) logger.info(`Processed Metrics Update: `, result);
     } catch (error) {
-      logger.error(`Error processing metrics update: `, error);
+      logger.error(`Error processing metrics update event: `, error);
     }
   });
 }
 
-module.exports = { listenEvents };
+module.exports = { listenContractEvents };

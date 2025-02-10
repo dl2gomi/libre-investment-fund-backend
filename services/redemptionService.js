@@ -3,7 +3,7 @@ const { Investor, Transaction, LastBlock } = require('../models');
 
 exports.handleRedemption = async (investorAddress, shares, usdAmount, sharePrice, event) => {
   const block = await event.getBlock();
-  const txId = event.transactionHash;
+  const txId = event.log?.transactionHash ?? event.transactionHash;
   const blockNumber = block.number;
 
   const lastBlock = await LastBlock.findOne({ where: { eventName: 'Redemption' } });

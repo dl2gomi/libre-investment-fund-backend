@@ -3,7 +3,7 @@ const { ethers } = require('ethers');
 
 exports.handleInvestment = async (investorAddress, usdAmount, sharesIssued, sharePrice, event) => {
   const block = await event.getBlock();
-  const txId = event.transactionHash;
+  const txId = event.log?.transactionHash ?? event.transactionHash;
   const blockNumber = block.number;
 
   const lastBlock = await LastBlock.findOne({ where: { eventName: 'Investment' } });

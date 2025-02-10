@@ -1,7 +1,7 @@
-const contract = require('./blockchain/fundContract');
+const { fundContract: contract, httpProvider, wsProvider } = require('./blockchain/fundContract');
 const { LastBlock } = require('./models');
 const logger = require('./utils/logger');
-const { listenEvents } = require('./blockchain/eventListener');
+const { listenContractEvents } = require('./blockchain/eventListener');
 const { handleInvestment } = require('./services/investmentService');
 const { handleRedemption } = require('./services/redemptionService');
 const { handleMetricsUpdated } = require('./services/metricsService');
@@ -41,25 +41,54 @@ async function fetchPastEvents() {
     for (const event of pastEventsMetrics) {
       await handleMetricsUpdated(event.args.totalAssetValue, event.args.sharesSupply, event.args.sharePrice, event);
     }
+
+    // log
+    logger.info('All the past events have been processed successfully.');
   } catch (error) {
     logger.error('Error fetching past events:', error);
   }
 }
 
+async function listenProviderEvents() {
+  wsProvider.websocket.on('error', (error) => {
+    logger.error('Provider error, attempting to reconnect...', error);
+    startListener();
+  });
+
+  wsProvider.websocket.on('close', (event) => {
+    logger.error(`Disconnected with event ${event}. Attempting to reconnect...`);
+    startListener();
+  });
+}
+
 // Start the event listeners
 async function startListener() {
+  console.log('Listening to events of the smart contract...');
+
+  // remove all listeners
+  contract.removeAllListeners();
+  wsProvider.websocket.onerror = null;
+  wsProvider.websocket.onclose = null;
+
+  // Wait before connecting
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+
   // handle past events
   await fetchPastEvents();
 
+  // bind provider listeners
+  await listenProviderEvents();
+
   // bind listeners
-  await listenEvents();
+  await listenContractEvents();
 }
 
-console.log('Listening to events of the smart contract...');
 startListener()
   .then(() => {
     logger.info('Listener started successfully');
   })
-  .catch((error) => {
+  .catch(async (error) => {
     logger.error('Error starting the listener', error);
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+    startListener();
   });
