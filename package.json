@@ -1,11 +1,25 @@
 {
   "name": "investment-fund-backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
+    "start": "node server.js && node chain.js",
+    "start:api": "node server.js",
+    "start:chain": "node chain.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Denis Lee",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "ethers": "^6.13.5",
+    "express": "^4.21.2",
+    "morgan": "^1.10.0",
+    "mysql2": "^3.12.0",
+    "redis": "^4.7.0",
+    "sequelize": "^6.37.5",
+    "winston": "^3.17.0"
+  }
 }
