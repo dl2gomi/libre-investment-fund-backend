@@ -6,24 +6,20 @@ module.exports = (sequelize, DataTypes) => {
     {
       investorId: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        field: 'investor_id'
+        allowNull: false
       },
       txId: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
-        field: 'tx_id'
+        unique: true
       },
       transactionType: {
         type: DataTypes.ENUM('investment', 'redemption'),
-        allowNull: false,
-        field: 'transaction_type'
+        allowNull: false
       },
       usdAmount: {
         type: DataTypes.DECIMAL(18, 6),
-        allowNull: false,
-        field: 'usd_amount'
+        allowNull: false
       },
       shares: {
         type: DataTypes.DECIMAL(18, 6),
@@ -36,8 +32,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       timestamps: true,
-      createdAt: 'created_at',
-      updatedAt: 'updated_at'
+      underscored: true
     }
   );
 

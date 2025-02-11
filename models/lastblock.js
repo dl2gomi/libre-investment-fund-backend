@@ -7,18 +7,18 @@ module.exports = (sequelize, DataTypes) => {
       eventName: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
-        field: 'event_name'
+        unique: true
       },
       blockNumber: {
         type: DataTypes.INTEGER,
         defaultValue: 0,
-        allowNull: false,
-        field: 'block_number'
+        allowNull: false
       }
     },
     {
-      timestamps: false
+      timestamps: false,
+      underscored: true,
+      tableName: 'lastblocks'
     }
   );
 

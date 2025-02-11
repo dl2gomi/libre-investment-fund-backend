@@ -7,32 +7,28 @@ module.exports = (sequelize, DataTypes) => {
       totalAssetValue: {
         type: DataTypes.DECIMAL(18, 6),
         allowNull: false,
-        defaultValue: 0,
-        field: 'total_asset_value'
+        defaultValue: 0
       },
       sharesSupply: {
         type: DataTypes.DECIMAL(18, 6),
         allowNull: false,
-        defaultValue: 0,
-        field: 'shares_supply'
+        defaultValue: 0
       },
       sharePrice: {
         type: DataTypes.DECIMAL(18, 6),
         allowNull: false,
-        defaultValue: 1,
-        field: 'share_price'
+        defaultValue: 1
       },
       lastUpdateTime: {
         type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: DataTypes.NOW,
-        field: 'last_update_time'
+        defaultValue: DataTypes.NOW
       }
     },
     {
       timestamps: true,
-      createdAt: 'created_at',
-      updatedAt: 'updated_at'
+      underscored: true,
+      tableName: 'fundmetrics'
     }
   );
 
