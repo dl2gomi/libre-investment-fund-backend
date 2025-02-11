@@ -10,6 +10,7 @@ dotenv.config();
 const transactionRoutes = require('./api/routes/transactionRoutes');
 const investorRoutes = require('./api/routes/investorRoutes');
 const metricsRoutes = require('./api/routes/metricsRoutes');
+const reportingRoutes = require('./api/routes/reportingRoutes');
 
 // Initialize Express app
 const app = express();
@@ -24,10 +25,11 @@ app.use(morgan('dev'));
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/investors', investorRoutes);
 app.use('/api/metrics', metricsRoutes);
+app.use('/api/reporting', reportingRoutes);
 
 // Health Check Endpoint
 app.get('/api/health', (req, res) => {
-  res.status(200).json({ message: 'API is running smoothly!' });
+  res.status(200).json({ success: true, message: 'API is running smoothly!' });
 });
 
 // Error Handling Middleware

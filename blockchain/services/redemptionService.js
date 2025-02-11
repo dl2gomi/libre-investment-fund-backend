@@ -6,13 +6,6 @@ exports.handleRedemption = async (investorAddress, shares, usdAmount, sharePrice
   const txId = event.log?.transactionHash ?? event.transactionHash;
   const blockNumber = block.number;
 
-  const lastBlock = await LastBlock.findOne({ where: { eventName: 'Redemption' } });
-
-  // Return null if this transaction is already handled
-  if (lastBlock && lastBlock.blockNumber >= blockNumber) {
-    return null;
-  }
-
   // Find txId transaction in the DB
   const existingTransaction = await Transaction.findOne({ where: { txId } });
 
