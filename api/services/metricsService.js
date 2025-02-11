@@ -67,7 +67,7 @@ exports.fetchLatestMetrics = async () => {
 
 // Service function to fetch historical metrics data
 exports.fetchHistoricalMetrics = async (page, limit, offset, timeRange) => {
-  const timeFilter = getTimeRangeFilter(timeRange);
+  const timeFilter = exports.getTimeRangeFilter(timeRange);
   let metricsHistory;
 
   if (page && limit) {

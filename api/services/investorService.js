@@ -2,8 +2,8 @@ const { Investor, Transaction } = require('../../models');
 
 // Helper function for parsing query parameters (pagination and ordering)
 exports.parseQueryParams = (query) => {
-  const page = query.page ? parseInt(query.page) : null;
-  const limit = query.limit ? parseInt(query.limit) : null;
+  const page = query.page ? (!isNaN(parseInt(query.page)) ? parseInt(query.page) : null) : null;
+  const limit = query.limit ? (!isNaN(parseInt(query.limit)) ? parseInt(query.limit) : null) : null;
   const offset = page && limit ? (page - 1) * limit : null;
 
   const allowedOrderFields = ['balance', 'created_at', 'last_transaction_time'];
@@ -53,12 +53,12 @@ exports.fetchInvestors = async (page, limit, offset, orderField, orderDirection)
     }
   });
 
-  // Apply pagination if provided
-  const paginatedInvestors = page && limit ? investors.slice(offset, offset + limit) : investors;
-
   if (!investors.length) {
     return { success: false, message: 'No investors found', code: 404 };
   }
+
+  // Apply pagination if provided
+  const paginatedInvestors = page && limit ? investors.slice(offset, offset + limit) : investors;
 
   if (page && limit) {
     return {

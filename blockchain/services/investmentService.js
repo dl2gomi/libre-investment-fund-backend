@@ -6,13 +6,6 @@ exports.handleInvestment = async (investorAddress, usdAmount, sharesIssued, shar
   const txId = event.log?.transactionHash ?? event.transactionHash;
   const blockNumber = block.number;
 
-  const lastBlock = await LastBlock.findOne({ where: { eventName: 'Investment' } });
-
-  // Return null if this transaction is already handled
-  if (lastBlock && lastBlock.blockNumber >= blockNumber) {
-    return null;
-  }
-
   // Find txId transaction in the DB
   const existingTransaction = await Transaction.findOne({ where: { txId } });
 
