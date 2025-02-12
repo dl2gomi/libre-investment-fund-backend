@@ -80,7 +80,7 @@ exports.fetchInvestors = async (page, limit, offset, orderField, orderDirection)
 exports.fetchWallet = async (walletAddress) => {
   const investor = await Investor.findOne({
     where: { walletAddress },
-    attributes: ['walletAddress', 'balance', 'createdAt']
+    attributes: ['id', 'walletAddress', 'balance', 'createdAt']
   });
 
   if (!investor) {

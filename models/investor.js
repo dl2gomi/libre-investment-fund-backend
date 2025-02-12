@@ -7,8 +7,7 @@ module.exports = (sequelize, DataTypes) => {
       walletAddress: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
-        field: 'wallet_address'
+        unique: true
       },
       balance: {
         type: DataTypes.DECIMAL(18, 6),
@@ -18,8 +17,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       timestamps: true,
-      createdAt: 'created_at',
-      updatedAt: 'updated_at'
+      underscored: true
     }
   );
 

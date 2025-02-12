@@ -25,11 +25,12 @@ exports.fetchBasicReport = async (walletAddress) => {
     order: [['balance', 'DESC']],
     limit: 10
   });
-  const latestMetrics = (await fetchLatestMetrics().data) ?? null;
+
+  const latestMetrics = (await fetchLatestMetrics()).data ?? null;
 
   return {
     success: true,
-    message: 'Investor retrieved successfully',
+    message: 'Basic report generated successfully',
     data: {
       totalUserCount,
       transactionVolInvest,

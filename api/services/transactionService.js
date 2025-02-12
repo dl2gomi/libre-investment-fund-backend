@@ -27,7 +27,7 @@ exports.fetchAllTransactions = async (page, limit, offset, orderField, orderDire
 
   const transactions = await Transaction.findAndCountAll({
     where: whereCondition,
-    include: [{ model: Investor, attributes: ['walletAddress'] }],
+    include: [{ model: Investor, as: 'investor', attributes: ['walletAddress'] }],
     order: [[orderField, orderDirection]],
     limit,
     offset

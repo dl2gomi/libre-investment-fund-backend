@@ -102,7 +102,7 @@ describe('API: Investor Service', () => {
 
     expect(Investor.findOne).toHaveBeenCalledWith({
       where: { walletAddress: '0x123' },
-      attributes: ['walletAddress', 'balance', 'createdAt']
+      attributes: ['id', 'walletAddress', 'balance', 'createdAt']
     });
 
     expect(Transaction.findOne).toHaveBeenCalledWith({
