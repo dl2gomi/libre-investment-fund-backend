@@ -1,0 +1,1592 @@
+{
+	"info": {
+		"_postman_id": "1de17589-62ac-4f3c-b416-b70497245569",
+		"name": "RESTful API Endpoints Tests",
+		"description": "Postman tests for libre investment platform backend.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "37930547"
+	},
+	"item": [
+		{
+			"name": "Investor",
+			"item": [
+				{
+					"name": "Get All Investors with no query",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response has the required fields - success, message, and data\", function () {",
+									"    const responseData = pm.response.json();",
+									"",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData).to.have.property('success');",
+									"    pm.expect(responseData).to.have.property('message');",
+									"    pm.expect(responseData).to.have.property('data');",
+									"});",
+									"",
+									"",
+									"pm.test(\"Wallet address should not be empty\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData.data).to.be.an('array').that.is.not.empty;",
+									"    responseData.data.forEach(function(investor) {",
+									"        pm.expect(investor.walletAddress).to.exist.and.to.have.lengthOf.at.least(1, \"Wallet address should not be empty\");",
+									"    });",
+									"});",
+									"",
+									"",
+									"pm.test(\"Balance is a non-negative number\", function () {",
+									"    const responseData = pm.response.json();",
+									"",
+									"    pm.expect(responseData.data).to.be.an('array');",
+									"    responseData.data.forEach(function(investor) {",
+									"        pm.expect(investor.balance).to.be.a('number');",
+									"        pm.expect(investor.balance).to.be.at.least(0, \"Balance should be a non-negative number\");",
+									"    });",
+									"});",
+									"",
+									"",
+									"pm.test(\"Last transaction time is in a valid date format\", function () {",
+									"  const responseData = pm.response.json();",
+									"  ",
+									"  pm.expect(responseData.data).to.be.an('array').that.is.not.empty;",
+									"  ",
+									"  responseData.data.forEach(function(investor) {",
+									"    pm.expect(investor.lastTransactionTime).to.match(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}Z$/);",
+									"  });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/investors",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"investors"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Investors ordered by last transaction time with pagination",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Content-Type header is application/json\", function () {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response has the required fields - success, message, data\", function () {",
+									"  const responseData = pm.response.json();",
+									"  ",
+									"  pm.expect(responseData).to.have.property('success');",
+									"  pm.expect(responseData).to.have.property('message');",
+									"  pm.expect(responseData).to.have.property('data');",
+									"});",
+									"",
+									"",
+									"pm.test(\"Total items and total pages are non-negative integers\", function () {",
+									"  const responseData = pm.response.json();",
+									"",
+									"  pm.expect(responseData).to.be.an('object');",
+									"  pm.expect(responseData.data.totalItems).to.be.a('number').and.to.be.at.least(0);",
+									"  pm.expect(responseData.data.totalPages).to.be.a('number').and.to.be.at.least(0);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Investors array is present and contains expected number of elements\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData.data.investors).to.be.an('array').and.to.have.lengthOf(1);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/investors?page=1&limit=5&orderBy=last_transaction_time&order=desc",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"investors"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "5"
+								},
+								{
+									"key": "orderBy",
+									"value": "last_transaction_time"
+								},
+								{
+									"key": "order",
+									"value": "desc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Investors ordered by join time with pagination",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Content-Type header is application/json\", function () {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Success field in the response should exist and be a boolean\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.have.property('success').that.is.a('boolean');",
+									"});",
+									"",
+									"",
+									"pm.test(\"Data object contains required fields\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData.data).to.be.an('object');",
+									"    pm.expect(responseData.data).to.have.property('totalItems');",
+									"    pm.expect(responseData.data).to.have.property('totalPages');",
+									"    pm.expect(responseData.data).to.have.property('currentPage');",
+									"    pm.expect(responseData.data).to.have.property('investors');",
+									"});",
+									"",
+									"",
+									"pm.test(\"Investors array should not be empty\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData.investors).to.be.an('array').and.to.have.lengthOf.at.least(1, \"Investors array should not be empty\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/investors?page=2&limit=5&orderBy=created_at&order=desc",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"investors"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "2"
+								},
+								{
+									"key": "limit",
+									"value": "5"
+								},
+								{
+									"key": "orderBy",
+									"value": "created_at"
+								},
+								{
+									"key": "order",
+									"value": "desc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Investors ordered by balance with pagination",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Content-Type header is application/json\", function () {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response has the required fields - success, message, data\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData).to.have.property('success');",
+									"    pm.expect(responseData).to.have.property('message');",
+									"    pm.expect(responseData).to.have.property('data');",
+									"});",
+									"",
+									"",
+									"pm.test(\"Total items and total pages are non-negative integers\", function () {",
+									"  const responseData = pm.response.json();",
+									"  ",
+									"  pm.expect(responseData.data.totalItems).to.be.a('number').and.to.satisfy((val) => val >= 0, \"Total items should be a non-negative integer\");",
+									"  pm.expect(responseData.data.totalPages).to.be.a('number').and.to.satisfy((val) => val >= 0, \"Total pages should be a non-negative integer\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Investors array is present and contains expected number of elements\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData.data).to.have.property('investors').that.is.an('array').and.to.have.lengthOf(1);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/investors?page=1&limit=5&order=desc&orderBy=balance",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"investors"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "5"
+								},
+								{
+									"key": "order",
+									"value": "desc"
+								},
+								{
+									"key": "orderBy",
+									"value": "balance"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get an Investor with Wallet",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response has the required fields - success, message, data\", function () {",
+									"    const responseData = pm.response.json();",
+									"",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData).to.have.property('success');",
+									"    pm.expect(responseData).to.have.property('message');",
+									"    pm.expect(responseData).to.have.property('data');",
+									"});",
+									"",
+									"",
+									"pm.test(\"Wallet address is a non-empty string\", function () {",
+									"  const responseData = pm.response.json();",
+									"  ",
+									"  pm.expect(responseData).to.be.an('object');",
+									"  pm.expect(responseData.data.walletAddress).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Wallet address should not be empty\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Balance is a non-negative number\", function () {",
+									"  const responseData = pm.response.json();",
+									"",
+									"  pm.expect(responseData).to.be.an('object');",
+									"  pm.expect(responseData.data.balance).to.exist.and.to.be.a('number').and.to.be.at.least(0);",
+									"});",
+									"",
+									"",
+									"pm.test(\"CreatedAt and lastTransactionTime are in a valid date format\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData.data.createdAt).to.match(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$/, \"CreatedAt should be in valid date format\");",
+									"    pm.expect(responseData.data.lastTransactionTime).to.match(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$/, \"lastTransactionTime should be in valid date format\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/investors/{{WALLET_EX}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"investors",
+								"{{WALLET_EX}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Transaction",
+			"item": [
+				{
+					"name": "Get transactions with no query",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Content-Type header is application/json\", function () {",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Success field in the response should be true\", function () {",
+									"  const responseData = pm.response.json();",
+									"  pm.expect(responseData.success).to.be.true;",
+									"});",
+									"",
+									"",
+									"pm.test(\"Data object contains the expected fields\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData.data).to.exist;",
+									"    pm.expect(responseData.data.totalItems).to.exist;",
+									"    pm.expect(responseData.data.totalPages).to.exist;",
+									"    pm.expect(responseData.data.currentPage).to.exist;",
+									"    pm.expect(responseData.data.transactions).to.exist;",
+									"});",
+									"",
+									"",
+									"pm.test(\"Transactions array is not empty and contains expected fields\", function () {",
+									"    const responseData = pm.response.json();",
+									"",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData.data.transactions).to.be.an('array').and.to.have.lengthOf.at.least(1, \"Transactions array should not be empty\");",
+									"",
+									"    responseData.data.transactions.forEach(function(transaction) {",
+									"        pm.expect(transaction).to.have.property('id');",
+									"        pm.expect(transaction).to.have.property('investorId');",
+									"        pm.expect(transaction).to.have.property('txId');",
+									"        pm.expect(transaction).to.have.property('transactionType');",
+									"        pm.expect(transaction).to.have.property('usdAmount');",
+									"        pm.expect(transaction).to.have.property('shares');",
+									"        pm.expect(transaction).to.have.property('timestamp');",
+									"        pm.expect(transaction).to.have.property('createdAt');",
+									"        pm.expect(transaction).to.have.property('updatedAt');",
+									"        pm.expect(transaction).to.have.property('investor_id');",
+									"        pm.expect(transaction).to.have.property('investor');",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/transactions",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get transactions filtered by transaction type",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Content-Type header is application/json\", function () {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Data object structure and fields validation\", function () {",
+									"    const responseData = pm.response.json();",
+									"",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData.data).to.exist.and.to.be.an('object');",
+									"    pm.expect(responseData.data.totalItems).to.exist.and.to.be.a('number');",
+									"    pm.expect(responseData.data.totalPages).to.exist.and.to.be.a('number');",
+									"    pm.expect(responseData.data.currentPage).to.exist.and.to.be.a('number');",
+									"    pm.expect(responseData.data.transactions).to.exist.and.to.be.an('array');",
+									"    responseData.data.transactions.forEach(function(transaction) {",
+									"        pm.expect(transaction).to.be.an('object');",
+									"        pm.expect(transaction.id).to.exist.and.to.be.a('number');",
+									"        pm.expect(transaction.investorId).to.exist.and.to.be.a('number');",
+									"        pm.expect(transaction.txId).to.exist.and.to.be.a('string');",
+									"        pm.expect(transaction.transactionType).to.exist.and.to.be.a('string');",
+									"        pm.expect(transaction.usdAmount).to.exist.and.to.be.a('string');",
+									"        pm.expect(transaction.shares).to.exist.and.to.be.a('string');",
+									"        pm.expect(transaction.timestamp).to.exist.and.to.be.a('string');",
+									"        pm.expect(transaction.createdAt).to.exist.and.to.be.a('string');",
+									"        pm.expect(transaction.updatedAt).to.exist.and.to.be.a('string');",
+									"        pm.expect(transaction.investor_id).to.exist.and.to.be.a('number');",
+									"        pm.expect(transaction.investor).to.exist.and.to.be.an('object');",
+									"        pm.expect(transaction.investor.walletAddress).to.exist.and.to.be.a('string');",
+									"    });",
+									"});",
+									"",
+									"",
+									"pm.test(\"Transactions array is present and contains the expected number of elements\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData.transactions).to.exist.and.to.be.an('array');",
+									"    pm.expect(responseData.transactions).to.have.lengthOf(1);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Timestamp, createdAt, and updatedAt fields are in a valid date format\", function () {",
+									"    const responseData = pm.response.json();",
+									"",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData.transactions).to.be.an('array');",
+									"    ",
+									"    responseData.transactions.forEach(function(transaction) {",
+									"        pm.expect(transaction.timestamp).to.match(/^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$/);",
+									"        pm.expect(transaction.createdAt).to.match(/^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$/);",
+									"        pm.expect(transaction.updatedAt).to.match(/^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$/);",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/transactions?type=investment",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"transactions"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "investment"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get transactions ordered by usd amount",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Content-Type header is application/json\", function () {",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Success field is true\", function () {",
+									"  const responseData = pm.response.json();",
+									"  ",
+									"  pm.expect(responseData.success).to.be.true;",
+									"});",
+									"",
+									"",
+									"pm.test(\"Validate the data object structure and its fields\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData.data).to.exist.and.to.be.an('object');",
+									"    pm.expect(responseData.data.totalItems).to.exist.and.to.be.a('number');",
+									"    pm.expect(responseData.data.totalPages).to.exist.and.to.be.a('number');",
+									"    pm.expect(responseData.data.currentPage).to.exist.and.to.be.a('number');",
+									"    pm.expect(responseData.data.transactions).to.exist.and.to.be.an('array');",
+									"    responseData.data.transactions.forEach(function(transaction) {",
+									"        pm.expect(transaction.id).to.exist.and.to.be.a('number');",
+									"        pm.expect(transaction.investorId).to.exist.and.to.be.a('number');",
+									"        pm.expect(transaction.txId).to.exist.and.to.be.a('string');",
+									"        pm.expect(transaction.transactionType).to.exist.and.to.be.a('string');",
+									"        pm.expect(transaction.usdAmount).to.exist.and.to.be.a('string');",
+									"        pm.expect(transaction.shares).to.exist.and.to.be.a('string');",
+									"        pm.expect(transaction.timestamp).to.exist.and.to.be.a('string');",
+									"        pm.expect(transaction.createdAt).to.exist.and.to.be.a('string');",
+									"        pm.expect(transaction.updatedAt).to.exist.and.to.be.a('string');",
+									"        pm.expect(transaction.investor_id).to.exist.and.to.be.a('number');",
+									"        pm.expect(transaction.investor).to.exist.and.to.be.an('object');",
+									"        pm.expect(transaction.investor.walletAddress).to.exist.and.to.be.a('string');",
+									"    });",
+									"});",
+									"",
+									"",
+									"pm.test(\"Transactions array is present and contains at least one element\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData.transactions).to.exist.and.to.be.an('array').that.is.not.empty;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/transactions?orderBy=usd_amount&order=asc",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"transactions"
+							],
+							"query": [
+								{
+									"key": "orderBy",
+									"value": "usd_amount"
+								},
+								{
+									"key": "order",
+									"value": "asc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get transactions paginated",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Content-Type header is application/json\", function () {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Success field should be true\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData.success).to.be.true;",
+									"});",
+									"",
+									"",
+									"pm.test(\"Data object contains required fields\", function () {",
+									"    const responseData = pm.response.json();",
+									"",
+									"    pm.expect(responseData.data).to.be.an('object');",
+									"    pm.expect(responseData.data.totalItems).to.exist;",
+									"    pm.expect(responseData.data.totalPages).to.exist;",
+									"    pm.expect(responseData.data.currentPage).to.exist;",
+									"    pm.expect(responseData.data.transactions).to.exist;",
+									"});",
+									"",
+									"",
+									"pm.test(\"Each transaction object in the 'transactions' array contains the required fields\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData.transactions).to.be.an('array').that.is.not.empty;",
+									"    ",
+									"    responseData.transactions.forEach(function(transaction) {",
+									"        pm.expect(transaction).to.include.all.keys(",
+									"            'id', ",
+									"            'investorId', ",
+									"            'txId', ",
+									"            'transactionType', ",
+									"            'usdAmount', ",
+									"            'shares', ",
+									"            'timestamp', ",
+									"            'createdAt', ",
+									"            'updatedAt', ",
+									"            'investor_id', ",
+									"            'investor'",
+									"        );",
+									"        pm.expect(transaction.investor).to.be.an('object').that.has.property('walletAddress');",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/transactions?page=2&limit=10",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"transactions"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "2"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get transactions by combining pagination, ordering, filtering",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Content type is application/json\", function () {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Success field should be true\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData.success).to.be.true;",
+									"});",
+									"",
+									"",
+									"pm.test(\"Data object contains required fields\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData.data).to.be.an('object');",
+									"    pm.expect(responseData.data).to.include.all.keys('totalItems', 'totalPages', 'currentPage', 'transactions');",
+									"});",
+									"",
+									"",
+									"pm.test(\"Transactions array is present and has expected number of elements\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData.transactions).to.exist.and.to.be.an('array');",
+									"    pm.expect(responseData.transactions).to.have.lengthOf(1);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/transactions?page=1&limit=5&type=investment&orderBy=timestmp&order=DESC",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"transactions"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "5"
+								},
+								{
+									"key": "type",
+									"value": "investment"
+								},
+								{
+									"key": "orderBy",
+									"value": "timestmp"
+								},
+								{
+									"key": "order",
+									"value": "DESC"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get transactions by wallet with no query",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"  pm.expect(pm.response.code).to.equal(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Content type is application/json\", function () {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Success field is present and set to true\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.have.property('success', true);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Data object contains required fields\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData.data).to.exist;",
+									"    pm.expect(responseData.data.totalItems).to.exist;",
+									"    pm.expect(responseData.data.totalPages).to.exist;",
+									"    pm.expect(responseData.data.currentPage).to.exist;",
+									"    pm.expect(responseData.data.transactions).to.exist;",
+									"});",
+									"",
+									"",
+									"pm.test(\"Each transaction in the 'transactions' array contains the required fields\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData.transactions).to.be.an('array').that.is.not.empty;",
+									"    ",
+									"    responseData.transactions.forEach(function(transaction) {",
+									"        pm.expect(transaction).to.have.property('id');",
+									"        pm.expect(transaction).to.have.property('investorId');",
+									"        pm.expect(transaction).to.have.property('txId');",
+									"        pm.expect(transaction).to.have.property('transactionType');",
+									"        pm.expect(transaction).to.have.property('usdAmount');",
+									"        pm.expect(transaction).to.have.property('shares');",
+									"        pm.expect(transaction).to.have.property('timestamp');",
+									"        pm.expect(transaction).to.have.property('createdAt');",
+									"        pm.expect(transaction).to.have.property('updatedAt');",
+									"        pm.expect(transaction).to.have.property('investor_id');",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/transactions/{{WALLET_EX}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"transactions",
+								"{{WALLET_EX}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get transactions by wallet with combined query",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Content-Type is application/json\", function () {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response has the required fields - success, message, data\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData).to.have.property('success');",
+									"    pm.expect(responseData).to.have.property('message');",
+									"    pm.expect(responseData).to.have.property('data');",
+									"});",
+									"",
+									"",
+									"pm.test(\"TotalItems, totalPages, and currentPage are non-negative integers\", function () {",
+									"  const responseData = pm.response.json();",
+									"",
+									"  pm.expect(responseData).to.be.an('object');",
+									"  pm.expect(responseData.data.totalItems).to.be.a('number').and.to.be.at.least(0);",
+									"  pm.expect(responseData.data.totalPages).to.be.a('number').and.to.be.at.least(0);",
+									"  pm.expect(responseData.data.currentPage).to.be.a('number').and.to.be.at.least(0);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Transactions array is present and contains expected number of elements\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData.transactions).to.be.an('array');",
+									"    pm.expect(responseData.transactions).to.have.lengthOf(1);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/transactions/{{WALLET_EX}}?page=1&limit=5&type=redemption&orderBy=timestmp&order=DESC",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"transactions",
+								"{{WALLET_EX}}"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "5"
+								},
+								{
+									"key": "type",
+									"value": "redemption"
+								},
+								{
+									"key": "orderBy",
+									"value": "timestmp"
+								},
+								{
+									"key": "order",
+									"value": "DESC"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Metrics",
+			"item": [
+				{
+					"name": "Get latest metrics",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"  pm.expect(pm.response.to.have.status(200));",
+									"});",
+									"",
+									"",
+									"pm.test(\"Content-Type header is application/json\", function () {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Data object should exist in the response\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.have.property('data').that.is.an('object');",
+									"});",
+									"",
+									"",
+									"pm.test(\"TotalAssetValue is a non-empty string\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData.data.totalAssetValue).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Value should not be empty\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"SharePrice is a valid number format\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData.data.sharePrice).to.be.a('number');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/metrics",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"metrics"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get history of metrics with no query",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response has the required fields\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    const requiredFields = ['id', 'totalAssetValue', 'sharesSupply', 'sharePrice', 'lastUpdateTime', 'createdAt', 'updatedAt'];",
+									"    requiredFields.forEach(field => {",
+									"        pm.expect(responseData).to.have.property(field);",
+									"    });",
+									"});",
+									"",
+									"",
+									"pm.test(\"TotalAssetValue is a valid number\", function () {",
+									"    const responseData = pm.response.json();",
+									"",
+									"    pm.expect(responseData.data).to.be.an('array');",
+									"    responseData.data.forEach(function(item) {",
+									"        pm.expect(item.totalAssetValue).to.be.a('number');",
+									"    });",
+									"});",
+									"",
+									"",
+									"pm.test(\"SharePrice is a valid number\", function () {",
+									"  const responseData = pm.response.json();",
+									"  ",
+									"  pm.expect(responseData.data).to.be.an('array').that.is.not.empty;",
+									"  responseData.data.forEach(function(item) {",
+									"    pm.expect(item.sharePrice).to.be.a('number');",
+									"  });",
+									"});",
+									"",
+									"",
+									"pm.test(\"LastUpdateTime is in a valid date format\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    responseData.data.forEach(function(metric) {",
+									"        pm.expect(metric.lastUpdateTime).to.match(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$/, \"LastUpdateTime should be in valid date format\");",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/metrics/history",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"metrics",
+								"history"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get history of metrics with pagination",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response Content-Type is application/json\", function () {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response status code is 200\", function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Validate success field is true\", function () {",
+									"  const responseData = pm.response.json();",
+									"  ",
+									"  pm.expect(responseData.success).to.be.true;",
+									"});",
+									"",
+									"",
+									"pm.test(\"Data object contains totalItems, totalPages, and currentPage\", function () {",
+									"  const responseData = pm.response.json();",
+									"",
+									"  pm.expect(responseData.data).to.exist.and.to.be.an('object');",
+									"  pm.expect(responseData.data.totalItems).to.exist;",
+									"  pm.expect(responseData.data.totalPages).to.exist;",
+									"  pm.expect(responseData.data.currentPage).to.exist;",
+									"});",
+									"",
+									"",
+									"pm.test(\"Metrics array is present and contains the expected number of elements\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData.data.metrics).to.exist.and.to.be.an('array');",
+									"    pm.expect(responseData.data.metrics).to.have.lengthOf(1);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/metrics/history?page=1&limit=10",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"metrics",
+								"history"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get history of metrics with timerange: 1 day",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Content Type is application/json\", function () {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Validate the success field is true\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData.success).to.be.true;",
+									"});",
+									"",
+									"",
+									"pm.test(\"Data array contains expected fields\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData.data).to.be.an('array').that.is.not.empty;",
+									"    ",
+									"    responseData.data.forEach(function(item) {",
+									"        pm.expect(item).to.have.property('id').that.is.a('number');",
+									"        pm.expect(item).to.have.property('totalAssetValue').that.is.a('string');",
+									"        pm.expect(item).to.have.property('sharesSupply').that.is.a('string');",
+									"        pm.expect(item).to.have.property('sharePrice').that.is.a('string');",
+									"        pm.expect(item).to.have.property('lastUpdateTime').that.is.a('string');",
+									"        pm.expect(item).to.have.property('createdAt').that.is.a('string');",
+									"        pm.expect(item).to.have.property('updatedAt').that.is.a('string');",
+									"    });",
+									"});",
+									"",
+									"",
+									"pm.test(\"Last update time, created at, and updated at are in valid date format\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData.data).to.be.an('array').that.is.not.empty;",
+									"",
+									"    responseData.data.forEach(function(dataItem) {",
+									"        pm.expect(dataItem.lastUpdateTime).to.match(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}Z$/);",
+									"        pm.expect(dataItem.createdAt).to.match(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}Z$/);",
+									"        pm.expect(dataItem.updatedAt).to.match(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}Z$/);",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/metrics/history?range=1d",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"metrics",
+								"history"
+							],
+							"query": [
+								{
+									"key": "range",
+									"value": "1d"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get history of metrics with timerange: 3 months",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Content-Type header is application/json\", function () {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Success field should exist and be a boolean\", function () {",
+									"    const responseData = pm.response.json();",
+									"",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData.success).to.exist.and.to.be.a('boolean');",
+									"});",
+									"",
+									"",
+									"pm.test(\"Data array is present and contains the expected number of elements\", function () {",
+									"  const responseData = pm.response.json();",
+									"  ",
+									"  pm.expect(responseData).to.be.an('object');",
+									"  pm.expect(responseData.data).to.exist.and.to.be.an('array');",
+									"  pm.expect(responseData.data).to.have.lengthOf.at.least(1, \"Data array should not be empty\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Validate data properties\", function () {",
+									"    const responseData = pm.response.json();",
+									"",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    ",
+									"    responseData.data.forEach(function(item) {",
+									"        pm.expect(item.id).to.be.a('number').and.to.be.at.least(0, \"ID should be a non-negative integer\");",
+									"        pm.expect(item.totalAssetValue).to.match(/^\\d+$/).and.to.not.be.empty;",
+									"        pm.expect(item.sharePrice).to.be.a('number').and.to.not.be.NaN;",
+									"        pm.expect(item.lastUpdateTime).to.match(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$/);",
+									"        pm.expect(item.createdAt).to.match(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$/);",
+									"        pm.expect(item.updatedAt).to.match(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$/);",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/metrics/history?range=3m",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"metrics",
+								"history"
+							],
+							"query": [
+								{
+									"key": "range",
+									"value": "3m"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get history of metrics with timerange and pagination",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Content-Type header is application/json\", function () {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Validate the success field is true\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData.success).to.be.true;",
+									"});",
+									"",
+									"",
+									"pm.test(\"Data object contains totalItems, totalPages, and currentPage\", function () {",
+									"  const responseData = pm.response.json();",
+									"  ",
+									"  pm.expect(responseData.data).to.be.an('object');",
+									"  pm.expect(responseData.data.totalItems).to.exist;",
+									"  pm.expect(responseData.data.totalPages).to.exist;",
+									"  pm.expect(responseData.data.currentPage).to.exist;",
+									"});",
+									"",
+									"",
+									"pm.test(\"Metrics array is present and contains the expected number of elements\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData.data.metrics).to.exist.and.to.be.an('array');",
+									"    pm.expect(responseData.data.metrics).to.have.lengthOf(1);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/metrics/history?range=3m&page=2&limit=10",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"metrics",
+								"history"
+							],
+							"query": [
+								{
+									"key": "range",
+									"value": "3m"
+								},
+								{
+									"key": "page",
+									"value": "2"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Others",
+			"item": [
+				{
+					"name": "Basic reporting",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Content-Type header is application/json\", function () {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Verify the 'success' field is boolean\", function () {",
+									"  const responseData = pm.response.json();",
+									"  pm.expect(responseData.success).to.be.a('boolean');",
+									"});",
+									"",
+									"",
+									"pm.test(\"Data object is present with required fields\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData.data).to.exist;",
+									"    pm.expect(responseData.data.totalUserCount).to.exist;",
+									"    pm.expect(responseData.data.transactionVolInvest).to.exist;",
+									"    pm.expect(responseData.data.transactionVolRedeem).to.exist;",
+									"    pm.expect(responseData.data.topInvestors).to.exist;",
+									"    pm.expect(responseData.data.latestMetrics).to.exist;",
+									"});",
+									"",
+									"",
+									"pm.test(\"Top investors array contains non-empty walletAddress and balance fields\", function () {",
+									"    const responseData = pm.response.json();",
+									"",
+									"    pm.expect(responseData.topInvestors).to.be.an('array').that.is.not.empty;",
+									"    responseData.topInvestors.forEach(function(investor) {",
+									"        pm.expect(investor).to.have.property('walletAddress').that.is.a('string').and.not.empty;",
+									"        pm.expect(investor).to.have.property('balance');",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/reporting",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"reporting"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Service health check",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response Content-Type is application/json\", function () {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Success should be true\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.have.property('success', true);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Message is a non-empty string\", function () {",
+									"  const responseData = pm.response.json();",
+									"  ",
+									"  pm.expect(responseData).to.be.an('object');",
+									"  pm.expect(responseData.message).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Message should not be empty\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Verify that the response is not empty\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.not.be.empty;",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response time is within an acceptable range\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(300);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/health",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"health"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "BASE_URL",
+			"value": "https://localhost:9999"
+		},
+		{
+			"key": "WALLET_EX",
+			"value": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+			"type": "string"
+		}
+	]
+}
