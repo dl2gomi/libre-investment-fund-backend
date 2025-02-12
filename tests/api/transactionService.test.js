@@ -86,7 +86,7 @@ describe('API: Transaction Service', () => {
 
     expect(Transaction.findAndCountAll).toHaveBeenCalledWith({
       where: {},
-      include: [{ model: require('../../models').Investor, attributes: ['walletAddress'] }],
+      include: [{ model: require('../../models').Investor, as: 'investor', attributes: ['walletAddress'] }],
       order: [['timestamp', 'DESC']],
       limit: 10,
       offset: 0
