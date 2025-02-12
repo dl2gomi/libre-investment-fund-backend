@@ -91,8 +91,13 @@ You can check [API Documentation here](docs/APIDocumentation.md)
 
 You can check [Implementation Documentation here](docs/project.pdf) to look at architecture design, DB design and components interaction.
 
+## Code samples
+
+You can check [Code Samples here](docs/CodeSamples.md) to look at example code snippets that uses this API endpoints.
+
 ## Assumptions & Simplicity
 
 - Auth functionalities are not implemented after asking questions.
 - All transactions made in the smart contract are assumed to be finalized to success. In a production mode, this needs to be considered. This is a crucial factor.
 - setSharePrice function is implemented in the smart contract code though it is not mentioned in the requirements document, but it is never used in this project.
+- Redis cloud has been used for caching and all the credentials are now in the `.env` file though I know it is not a recommended way in production mode.
