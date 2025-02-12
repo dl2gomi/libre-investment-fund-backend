@@ -89,7 +89,7 @@ You can check [API Documentation here](docs/APIDocumentation.md)
 
 ## Implementation documentation
 
-You can check [Implementation Documentation here](docs/project.pdf)
+You can check [Implementation Documentation here](docs/project.pdf) to look at architecture design, DB design and components interaction.
 
 ## Assumptions & Simplicity
 
