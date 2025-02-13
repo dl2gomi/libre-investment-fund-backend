@@ -50,6 +50,11 @@ REDIS_URL=redis://default:V07CoP9QwOaINFQm0S0vpcXS4bRhk2vw@redis-17685.c326.us-e
 ```
 
 MySQL DB needs to be run before executing the commands in the following repository.
+MySQL database can be migrated using the following command:
+
+```
+npx sequelize-cli db:migrate
+```
 
 ## Run the blockchain and deploy the FundToken smart contract
 
